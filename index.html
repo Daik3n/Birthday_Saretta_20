@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buon Compleanno Saretta 🌠</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0a14;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      cursor: default;
+    }
+
+    /* ── SCHERMATA GOOGLE ── */
+    #google-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a14;
+      transition: opacity 0.6s ease;
+    }
+
+    #google-screen img {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+
+    #google-screen img:hover {
+      transform: scale(1.01);
+      filter: brightness(1.08);
+    }
+
+    #click-hint {
+      position: absolute;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.55);
+      font-family: 'Lora', serif;
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      animation: pulse 2.2s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    /* ── FADE OUT GOOGLE ── */
+    #google-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ── SCHERMATA CIELO ── */
+    #sky-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #060614;
+      opacity: 0;
+      transition: opacity 1s ease 0.5s;
+    }
+
+    #sky-screen.visible {
+      opacity: 1;
+    }
+
+    #sky-screen img {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+    }
+
+    /* ── OVERLAY TESTO ── */
+    #message-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 8vh;
+      pointer-events: none;
+    }
+
+    #message-box {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 1.2s ease, transform 1.2s ease;
+      text-align: center;
+      padding: 2rem 3rem;
+      background: radial-gradient(ellipse at center, rgba(10,8,40,0.82) 0%, rgba(5,4,20,0.65) 100%);
+      border: 1px solid rgba(180,140,255,0.25);
+      border-radius: 4px;
+      backdrop-filter: blur(6px);
+      max-width: 680px;
+      width: 90%;
+    }
+
+    #message-box.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #message-box .line1 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(1.15rem, 3vw, 2rem);
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.04em;
+      line-height: 1.3;
+      text-shadow:
+        0 0 18px rgba(160,120,255,0.9),
+        0 0 40px rgba(100,180,255,0.5),
+        0 2px 4px rgba(0,0,0,0.8);
+    }
+
+    #message-box .line2 {
+      margin-top: 0.65rem;
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: clamp(1rem, 2.2vw, 1.4rem);
+      color: rgba(220,200,255,0.9);
+      letter-spacing: 0.06em;
+      text-shadow:
+        0 0 14px rgba(180,140,255,0.7),
+        0 2px 4px rgba(0,0,0,0.6);
+    }
+
+    /* stelle scintillanti extra */
+    .sparkle {
+      position: fixed;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: white;
+      animation: twinkle var(--dur, 3s) ease-in-out infinite var(--delay, 0s);
+      pointer-events: none;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0; transform: scale(1); }
+      50%       { opacity: 1; transform: scale(2.2); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Schermata Google (cliccabile) -->
+  <div id="google-screen">
+    <img src="google_stelle.png" alt="Google" id="google-img" />
+    <div id="click-hint">✦ clicca per scoprire ✦</div>
+  </div>
+
+  <!-- Cielo stellato con cometa -->
+  <div id="sky-screen">
+    <img src="stelline_con_Saretta.png" alt="Cielo stellato" />
+  </div>
+
+  <!-- Messaggio di compleanno -->
+  <div id="message-overlay">
+    <div id="message-box">
+      <div class="line1">È il compleanno di Saretta</div>
+      <div class="line2">Tanti auguri my Lady ✨</div>
+    </div>
+  </div>
+
+  <script>
+    const googleScreen = document.getElementById('google-screen');
+    const skyScreen    = document.getElementById('sky-screen');
+    const messageBox   = document.getElementById('message-box');
+
+    // Genera scintille casuali (nascosto fino all'apertura del cielo)
+    const sparkleContainer = document.createDocumentFragment();
+    for (let i = 0; i < 30; i++) {
+      const s = document.createElement('div');
+      s.className = 'sparkle';
+      s.style.cssText = `
+        left: ${Math.random()*100}vw;
+        top:  ${Math.random()*100}vh;
+        --dur:   ${2 + Math.random()*4}s;
+        --delay: ${Math.random()*5}s;
+        opacity: 0;
+      `;
+      document.body.appendChild(s);
+    }
+
+    document.getElementById('google-img').addEventListener('click', () => {
+      // 1. Fade out Google
+      googleScreen.classList.add('fade-out');
+
+      // 2. Mostra cielo
+      setTimeout(() => {
+        skyScreen.classList.add('visible');
+      }, 300);
+
+      // 3. Mostra messaggio
+      setTimeout(() => {
+        messageBox.classList.add('show');
+      }, 2200);
+
+      // 4. Attiva scintille
+      setTimeout(() => {
+        document.querySelectorAll('.sparkle').forEach(s => s.style.opacity = '');
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
